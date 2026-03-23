@@ -168,12 +168,9 @@
     },
     "linux": {
       "target": [
-        "AppImage",
-        "zip",
-        "deb",
-        "rpm"
+        "deb"
       ],
-      "maintainer": "Nayam Amarshe <simplelogin-newsletter.j1zez@aleeas.com>",
+      "maintainer": "Chuck Talk <chuck@nordheim.online>",
       "category": "Graphics;2DGraphics;RasterGraphics;ImageProcessing;",
       "synopsis": "AI Image Upscaler",
       "description": "Free and Open Source AI Image Upscaler",
