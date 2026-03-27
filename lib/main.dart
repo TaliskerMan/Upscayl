@@ -1,11 +1,14 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as p;
 import 'services/upscayl_engine.dart';
+import 'services/logger_service.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await LoggerService().init();
+  
   runApp(
     MultiProvider(
       providers: [
@@ -40,9 +43,29 @@ class UpscaylHome extends StatefulWidget {
   State<UpscaylHome> createState() => _UpscaylHomeState();
 }
 
-class _UpscaylHomeState extends State<UpscaylHome> {
+class _UpscaylHomeState extends State<UpscaylHome> with WidgetsBindingObserver {
   String? _inputPath;
   String? _outputDirPath;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    context.read<UpscaylEngine>().cancel();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.detached) {
+      context.read<UpscaylEngine>().cancel();
+    }
+  }
   
   final List<String> _models = [
     'upscayl-standard-4x',
@@ -95,6 +118,7 @@ class _UpscaylHomeState extends State<UpscaylHome> {
         )
       );
     } catch (e) {
+      LoggerService().e('Execution Error: $e');
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -119,6 +143,21 @@ class _UpscaylHomeState extends State<UpscaylHome> {
       appBar: AppBar(
         title: const Text('Upscayl Native Engine \u{1F680}'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.info_outline),
+            tooltip: 'About',
+            onPressed: () {
+              showAboutDialog(
+                context: context,
+                applicationName: 'Upscayl Native Engine',
+                applicationVersion: '1.0.1+2',
+                applicationIcon: const Icon(Icons.auto_awesome, size: 64, color: Colors.deepPurpleAccent),
+                applicationLegalese: 'Copyright © Chuck Talk\nEmail: chuck@nordheim.online\nLicense: MIT / AGPLv3',
+              );
+            },
+          )
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 24.0),

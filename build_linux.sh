@@ -2,8 +2,8 @@
 set -e
 
 # Config
-VERSION="2.15.0"
-BUILD_SUFFIX="native.1"
+VERSION="1.0.1"
+BUILD_SUFFIX="2"
 ARCH="amd64"
 DEBEMAIL="chuck@nordheim.online"
 PACKAGE_NAME="upscayl_${VERSION}-${BUILD_SUFFIX}_${ARCH}"
